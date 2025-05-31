@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Registration Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="date"] {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      width: 100%;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    button {
+      padding: 10px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    table {
+      margin-top: 30px;
+      width: 90%;
+      max-width: 800px;
+      border-collapse: collapse;
+      background-color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h2>Registration Form</h2>
+  <form id="registrationForm">
+    <div>
+      <label for="name">Name</label>
+      <input type="text" id="name" required />
+    </div>
+
+    <div>
+      <label for="email">Email</label>
+      <input type="email" id="email" required />
+    </div>
+
+    <div>
+      <label for="password">Password</label>
+      <input type="password" id="password" required />
+    </div>
+
+    <div>
+      <label for="dob">Date of Birth</label>
+      <input type="date" id="dob" required />
+    </div>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="acceptTerms" required />
+      <label for="acceptTerms">Accept terms and conditions</label>
+    </div>
+
+    <button type="submit">Submit</button>
+  </form>
+
+  <table id="dataTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Password</th>
+        <th>Dob</th>
+        <th>Accepted terms?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Entries will be injected here -->
+    </tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById("registrationForm");
+    const tableBody = document.querySelector("#dataTable tbody");
+
+    function isValidAge(dob) {
+      const today = new Date();
+      const birthDate = new Date(dob);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      return age >= 18 && age <= 55;
+    }
+
+    function updateTable(data) {
+      tableBody.innerHTML = "";
+      data.forEach((entry) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${entry.name}</td>
+          <td>${entry.email}</td>
+          <td>${entry.password}</td>
+          <td>${entry.dob}</td>
+          <td>${entry.acceptedTerms}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function loadFromLocalStorage() {
+      const data = JSON.parse(localStorage.getItem("entries")) || [];
+      updateTable(data);
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const dob = document.getElementById("dob").value;
+      const acceptedTerms = document.getElementById("acceptTerms").checked;
+
+      if (!isValidAge(dob)) {
+        alert("Age must be between 18 and 55.");
+        return;
+      }
+
+      const newEntry = { name, email, password, dob, acceptedTerms };
+      const existingEntries = JSON.parse(localStorage.getItem("entries")) || [];
+      existingEntries.push(newEntry);
+      localStorage.setItem("entries", JSON.stringify(existingEntries));
+
+      updateTable(existingEntries);
+      form.reset();
+    });
+
+    // Load on page load
+    window.onload = loadFromLocalStorage;
+  </script>
+</body>
+</html>
