@@ -132,66 +132,6 @@
     </tbody>
   </table>
 
-  <script>
-    const form = document.getElementById("registrationForm");
-    const tableBody = document.querySelector("#dataTable tbody");
-
-    function isValidAge(dob) {
-      const today = new Date();
-      const birthDate = new Date(dob);
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const m = today.getMonth() - birthDate.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-      return age >= 18 && age <= 55;
-    }
-
-    function updateTable(data) {
-      tableBody.innerHTML = "";
-      data.forEach((entry) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${entry.name}</td>
-          <td>${entry.email}</td>
-          <td>${entry.password}</td>
-          <td>${entry.dob}</td>
-          <td>${entry.acceptedTerms}</td>
-        `;
-        tableBody.appendChild(row);
-      });
-    }
-
-    function loadFromLocalStorage() {
-      const data = JSON.parse(localStorage.getItem("entries")) || [];
-      updateTable(data);
-    }
-
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
-      const dob = document.getElementById("dob").value;
-      const acceptedTerms = document.getElementById("acceptTerms").checked;
-
-      if (!isValidAge(dob)) {
-        alert("Age must be between 18 and 55.");
-        return;
-      }
-
-      const newEntry = { name, email, password, dob, acceptedTerms };
-      const existingEntries = JSON.parse(localStorage.getItem("entries")) || [];
-      existingEntries.push(newEntry);
-      localStorage.setItem("entries", JSON.stringify(existingEntries));
-
-      updateTable(existingEntries);
-      form.reset();
-    });
-
-    // Load on page load
-    window.onload = loadFromLocalStorage;
-  </script>
+  <script src="index.js"> </script>
 </body>
 </html>
